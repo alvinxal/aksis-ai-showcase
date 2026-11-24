@@ -1,0 +1,8 @@
+_config_version: 51
+
+platform_toolsets:
+  cli: []
+  api_server: []
+
+agent:
+  max_iterations: 1

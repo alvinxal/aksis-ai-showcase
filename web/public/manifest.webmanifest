@@ -1,0 +1,18 @@
+{
+  "id": "/app",
+  "name": "Aksis AI",
+  "short_name": "Aksis",
+  "description": "Asisten proyek untuk profesional yang bekerja dengan klien: keputusan, revisi, dan tenggat dari grup WhatsApp dalam satu tempat.",
+  "lang": "id",
+  "start_url": "/app",
+  "scope": "/app",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fafaf8",
+  "theme_color": "#0e2319",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

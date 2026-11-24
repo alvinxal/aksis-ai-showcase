@@ -1,0 +1,16 @@
+node_modules/
+dist/
+runtime/
+backups/
+coverage/
+*.log
+.playwright-mcp/
+
+# Local credentials. Commit only explicit, redacted example files.
+.env
+.env.*
+!*.env.example
+
+# Hermes gateway state includes provider credentials, session history and pairing data.
+.hermes/
+.hermes-*/

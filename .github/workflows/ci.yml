@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: aksis_ai
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: aksis_ai
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U aksis_ai -d aksis_ai"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      AKSIS_TEST_DATABASE_URL: postgres://aksis_ai:ci@127.0.0.1:5432/aksis_ai
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Apply migrations
+        run: |
+          for file in migrations/*.sql; do
+            PGPASSWORD=ci psql -v ON_ERROR_STOP=1 -q -h 127.0.0.1 -U aksis_ai -d aksis_ai -f "$file"
+          done
+      - name: Migrations from 003 on run twice (new ones must be idempotent; 001 and 002 predate the rule)
+        run: |
+          for file in $(ls migrations/*.sql | tail -n +3); do
+            PGPASSWORD=ci psql -v ON_ERROR_STOP=1 -q -h 127.0.0.1 -U aksis_ai -d aksis_ai -f "$file" > /dev/null
+          done
+      - run: npm run check
+      - run: npm test
+      - run: npm audit --omit=dev --audit-level=high
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: web/package.json
+      - name: Web
+        working-directory: web
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm check
+          pnpm build
+          pnpm audit --prod --audit-level=high
